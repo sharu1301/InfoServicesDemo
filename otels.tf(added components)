@@ -1,0 +1,14 @@
+resource "aws_iam_role_policy_attachment" "otel_xray" {
+  role       = aws_iam_role.otel_collector_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+}
+
+resource "kubernetes_service_account" "otel_collector" {
+  metadata {
+    name      = local.otel_serviceaccount
+    namespace = local.otel_namespace
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_role.otel_collector_role.arn
+    }
+  }
+}
